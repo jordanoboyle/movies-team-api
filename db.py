@@ -82,5 +82,18 @@ def movies_find_by_id(id):
     ).fetchone()
     return dict(row)
 
+def movies_update_by_id(id, genre_id, review_id, name, release_year, run_time, image_url):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        UPDATE movies SET genre_id = ?, review_id = ?, name = ?, release_year = ?, run_time = ?, image_url = ?
+        WHERE id = ?
+        RETURNING *
+        """,
+        (genre_id, review_id, name, release_year, run_time, image_url, id),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
 if __name__ == "__main__":
     initial_setup()
