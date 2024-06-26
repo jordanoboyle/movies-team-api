@@ -21,3 +21,7 @@ def create():
     run_time = request.form.get("run_time")
     image_url = request.form.get("image_url")
     return db.movies_create(genre_id, review_id, name, release_year, run_time, image_url)
+
+@app.route("/movies/<id>.json")
+def show(id):
+    return db.movies_find_by_id(id)
