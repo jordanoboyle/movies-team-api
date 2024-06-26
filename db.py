@@ -77,6 +77,7 @@ def initial_setup():
 
     conn.close()
 
+# MOVIES Table Connections
 def movies_all():
     conn = connect_to_db()
     rows = conn.execute(
@@ -134,6 +135,42 @@ def movies_destroy_by_id(id):
     )
     conn.commit()
     return {"message": "Movie destroyed successfully"}
+
+#Genre Table Connections
+def genres_all():
+    conn = connect_to_db()
+    rows = conn.execute(
+        """
+        SELECT * FROM genres
+        """
+    ).fetchall()
+    return [dict(row) for row in rows]
+
+def genres_create(name):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        INSERT INTO genres (name)
+        VALUES (?)
+        RETURNING *
+        """,
+        (name,),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
+def genres_find_by_id(id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        SELECT * FROM movies
+        WHERE id = ?
+        """,
+        (id,),
+    ).fetchone()
+    return dict(row)
+
+
 
 if __name__ == "__main__":
     initial_setup()
