@@ -35,3 +35,7 @@ def update(id):
     run_time = request.form.get("run_time")
     image_url = request.form.get("image_url")
     return db.movies_update_by_id(id, genre_id, review_id, name, release_year, run_time, image_url)
+
+@app.route("/movies/<id>.json", methods=["DELETE"])
+def destroy(id):
+    return db.movies_destroy_by_id(id)

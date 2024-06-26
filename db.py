@@ -95,5 +95,18 @@ def movies_update_by_id(id, genre_id, review_id, name, release_year, run_time, i
     conn.commit()
     return dict(row)
 
+def movies_destroy_by_id(id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        DELETE from movies
+        WHERE id = ?
+        """,
+        (id,),
+    )
+    conn.commit()
+    return {"message": "Movie destroyed successfully"}
+
 if __name__ == "__main__":
     initial_setup()
+    
