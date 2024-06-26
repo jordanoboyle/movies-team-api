@@ -16,6 +16,11 @@ def initial_setup():
     )
     conn.execute(
         """
+        DROP TABLE IF EXISTS genres;
+        """
+    )
+    conn.execute(
+        """
         CREATE TABLE movies (
           id INTEGER PRIMARY KEY NOT NULL,
           genre_id INTEGER,
@@ -24,7 +29,14 @@ def initial_setup():
           release_year INTEGER,
           run_time INTEGER,
           image_url TEXT
-          
+          );
+        """
+    )
+    conn.execute(
+        """
+        CREATE TABLE genres (
+        id INTEGER PRIMARY KEY NOT NULL,
+        name TEXT
         );
         """
     )
@@ -37,12 +49,28 @@ def initial_setup():
         (3, 3, "Team America: World Police", 2004, 98, "https://m.media-amazon.com/images/M/MV5BMTM2Nzc4NjYxMV5BMl5BanBnXkFtZTcwNTM1MTcyMQ@@._V1_.jpg"),
         (4, 4, "Borat", 2006, 84,"https://upload.wikimedia.org/wikipedia/en/3/39/Borat_ver2.jpg")
     ]
+    genres_seed_data = [
+        ("Comedy",),
+        ("Sci-Fi",),
+        ("Romance",),
+        ("Drama",),
+        ("Thriller",),
+        ("Action",)
+    ]
     conn.executemany(
         """
         INSERT INTO movies (genre_id, review_id, name, release_year, run_time, image_url)
         VALUES (?,?,?,?,?,?)
         """,
         movies_seed_data,
+    )
+    conn.executemany(
+        """
+        INSERT INTO genres (name)
+        VALUES (?)
+        """,
+        genres_seed_data,
+
     )
     conn.commit()
     print("Seed data created successfully")
