@@ -58,6 +58,19 @@ def movies_all():
     ).fetchall()
     return [dict(row) for row in rows]
 
+def movies_create(genre_id, review_id, name, release_year, run_time, image_url):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        INSERT INTO movies (genre_id, review_id, name, release_year, run_time, image_url)
+        VALUES (?, ?, ?, ?, ?, ?)
+        RETURNING *
+        """,
+        (genre_id, review_id, name, release_year, run_time, image_url),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
 
 if __name__ == "__main__":
     initial_setup()
