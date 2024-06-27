@@ -170,6 +170,30 @@ def genres_find_by_id(id):
     ).fetchone()
     return dict(row)
 
+def genres_update_by_id(id, name):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        UPDATE genres SET name = ?
+        WHERE id = ?
+        RETURNING *
+        """,
+        (name, id),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+    
+def genres_destroy_by_id(id):
+    conn = connect_to_db()
+    conn.execute(
+        """
+        DELETE from genres
+        WHERE id = ?
+        """,
+        (id,)
+    )
+    conn.commit()
+    return {"message": "Genre removed"}
 
 
 if __name__ == "__main__":

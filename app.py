@@ -54,4 +54,12 @@ def create_genre():
 @app.route("/genres/<id>", endpoint="show_genre")
 def show_genre(id):
     return db.genres_find_by_id(id)
-    
+
+@app.route("/genres/<id>.json", methods=["PATCH"], endpoint="update_genre")
+def update_genre(id):
+    name = request.form.get("name")
+    return db.genres_update_by_id(id, name)
+
+@app.route("/genres/<id>.json", methods=["DELETE"], endpoint="delete_genre")
+def delete_genre(id):
+    return db.genres_destroy_by_id(id)
