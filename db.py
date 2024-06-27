@@ -284,7 +284,9 @@ def reviews_all():
     conn = connect_to_db()
     rows = conn.execute(
         """
-        SELECT * FROM reviews
+        SELECT reviews.title, reviews.body, reviews.rating, movies.name
+        FROM reviews
+        JOIN movies ON reviews.movie_id = movies.id
         """
     ).fetchall()
     return [dict(row) for row in rows]
@@ -306,8 +308,10 @@ def reviews_find_by_id(id):
     conn = connect_to_db()
     row = conn.execute(
         """
-        SELECT * FROM reviews
-        WHERE id = ?
+        SELECT reviews.title, reviews.body, reviews.rating, movies.name
+        FROM reviews
+        JOIN movies ON reviews.movie_id = movies.id
+        WHERE reviews.id = ?
         """,
         (id,),
     ).fetchone()
