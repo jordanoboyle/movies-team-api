@@ -47,8 +47,8 @@ def index_genres():
 @app.route("/genres.json", methods=["POST"], endpoint="create_genre")
 def create_genre():
     movie_id = request.form.get("movie_id",)
-    name = request.form.get("name",)
-    return db.genres_create(movie_id, name)
+    genre_name = request.form.get("genre_name",)
+    return db.genres_create(movie_id, genre_name)
 
 @app.route("/genres/<id>.json", endpoint="show_genre")
 def show_genre(id):
@@ -57,8 +57,8 @@ def show_genre(id):
 @app.route("/genres/<id>.json", methods=["PATCH"], endpoint="update_genre")
 def update_genre(id):
     movie_id = request.form.get("movie_id")
-    name = request.form.get("name")
-    return db.genres_update_by_id(id, movie_id, name)
+    genre_name = request.form.get("genre_name")
+    return db.genres_update_by_id(id, movie_id, genre_name)
 
 @app.route("/genres/<id>.json", methods=["DELETE"], endpoint="delete_genre")
 def delete_genre(id):

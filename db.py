@@ -65,7 +65,7 @@ def initial_setup():
         CREATE TABLE genres (
         id INTEGER PRIMARY KEY NOT NULL,
         movie_id INTEGER,
-        name TEXT
+        genre_name TEXT
         );
         """
     )
@@ -84,7 +84,7 @@ def initial_setup():
 
     conn.executemany(
         """
-        INSERT INTO genres (movie_id, name)
+        INSERT INTO genres (movie_id, genre_name)
         VALUES (?, ?)
         """,
         genres_seed_data,
@@ -164,7 +164,7 @@ def initial_setup():
 # MOVIES Table Connections
 def movies_all():
     conn = connect_to_db()
-    rows = conn.execute(
+    rows = conn.executemany(
         """
         SELECT * FROM movies
         """
@@ -219,7 +219,10 @@ def movies_destroy_by_id(id):
     )
     conn.commit()
     return {"message": "Movie destroyed successfully"}
-
+# SELECT genres.name, movies.image_url
+#         FROM genres
+#         JOIN movies ON genres.movie_id = movies.id
+# SELECT * FROM genres
 #Genre Table Connections
 def genres_all():
     conn = connect_to_db()
@@ -230,15 +233,15 @@ def genres_all():
     ).fetchall()
     return [dict(row) for row in rows]
 
-def genres_create(movie_id, name):
+def genres_create(movie_id, genre_name):
     conn = connect_to_db()
     row = conn.execute(
         """
-        INSERT INTO genres (movie_id, name)
+        INSERT INTO genres (movie_id, genre_name)
         VALUES (?, ?)
         RETURNING *
         """,
-        (movie_id, name,),
+        (movie_id, genre_name,),
     ).fetchone()
     conn.commit()
     return dict(row)
@@ -254,15 +257,15 @@ def genres_find_by_id(id):
     ).fetchone()
     return dict(row)
 
-def genres_update_by_id(id, movie_id, name):
+def genres_update_by_id(id, movie_id, genre_name):
     conn = connect_to_db()
     row = conn.execute(
         """
-        UPDATE genres SET movie_id = ?, name = ?
+        UPDATE genres SET movie_id = ?, genre_name = ?
         WHERE id = ?
         RETURNING *
         """,
-        (movie_id, name, id),
+        (movie_id, genre_name, id),
     ).fetchone()
     conn.commit()
     return dict(row)
