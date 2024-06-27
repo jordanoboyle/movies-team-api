@@ -16,6 +16,16 @@ def initial_setup():
     )
     conn.execute(
         """
+        DROP TABLE IF EXISTS genres;
+        """
+    )
+    conn.execute(
+        """
+        DROP TABLE IF EXISTS users;
+        """
+    )
+    conn.execute(
+        """
         CREATE TABLE movies (
           id INTEGER PRIMARY KEY NOT NULL,
           name TEXT,
@@ -59,6 +69,17 @@ def initial_setup():
         );
         """
     )
+    conn.execute(
+        """
+        CREATE TABLE users (
+        id INTEGER PRIMARY KEY NOT NULL,
+        name TEXT,
+        email TEXT,
+        password TEXT,
+        password_digest TEXT,
+        );
+        """
+    )
     conn.commit()
     print("genres table created successfully")
 
@@ -69,6 +90,12 @@ def initial_setup():
         (3, "Drama",),
         (1, "Thriller",),
         (4, "Action",)
+    ]
+    users_seed_data = [
+        ("bob", "bob@email.com", "password"),
+        ("alex", "alex@email.com", "password"),
+        ("tony", "tony@email.com", "password"),
+        ("joe", "joe@email.com", "password")
     ]
     conn.executemany(
         """
