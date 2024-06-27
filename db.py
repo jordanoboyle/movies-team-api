@@ -28,8 +28,6 @@ def initial_setup():
         """
         CREATE TABLE movies (
           id INTEGER PRIMARY KEY NOT NULL,
-          genre_id INTEGER,
-          review_id INTEGER,
           name TEXT,
           release_year INTEGER,
           run_time INTEGER,
@@ -37,10 +35,36 @@ def initial_setup():
           );
         """
     )
+    conn.commit()
+    print("movies table created successfully")
+
+    movies_seed_data = [
+        ("Alien", 1979, 125, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZQxuhkEwoRCa2QzZBb7lOVhdcMPPpxDAJ2A&s"),
+        ("Tropic Thunder", 2008, 107, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKRQWm9hzGhsgGzmJx_DLvCy5vos2w4Htb4A&s"),
+        ("Team America: World Police", 2004, 98, "https://m.media-amazon.com/images/M/MV5BMTM2Nzc4NjYxMV5BMl5BanBnXkFtZTcwNTM1MTcyMQ@@._V1_.jpg"),
+        ("Borat", 2006, 84,"https://upload.wikimedia.org/wikipedia/en/3/39/Borat_ver2.jpg")
+    ]
+
+    conn.executemany(
+        """
+        INSERT INTO movies (name, release_year, run_time, image_url)
+        VALUES (?,?,?,?)
+        """,
+        movies_seed_data,
+    )
+    conn.commit()
+    print("movies seed data created successfully")
+
+    conn.execute(
+        """
+        DROP TABLE IF EXISTS genres;
+        """
+    )
     conn.execute(
         """
         CREATE TABLE genres (
         id INTEGER PRIMARY KEY NOT NULL,
+        movie_id INTEGER,
         name TEXT
         );
         """
@@ -57,21 +81,15 @@ def initial_setup():
         """
     )
     conn.commit()
-    print("Table created successfully")
+    print("genres table created successfully")
 
-    movies_seed_data = [
-        (1, 1, "Alien", 1979, 125, "https://postergirlnyc.myshopify.com/cdn/shop/products/182717571546-0_1200x1200.jpg?v=1563557298"),
-        (2, 2, "Tropic Thunder", 2008, 107, "https://m.media-amazon.com/images/I/51AQVt+AIVL._AC_UF894,1000_QL80_.jpg"),
-        (3, 3, "Team America: World Police", 2004, 98, "https://m.media-amazon.com/images/M/MV5BMTM2Nzc4NjYxMV5BMl5BanBnXkFtZTcwNTM1MTcyMQ@@._V1_.jpg"),
-        (4, 4, "Borat", 2006, 84,"https://upload.wikimedia.org/wikipedia/en/3/39/Borat_ver2.jpg")
-    ]
     genres_seed_data = [
-        ("Comedy",),
-        ("Sci-Fi",),
-        ("Romance",),
-        ("Drama",),
-        ("Thriller",),
-        ("Action",)
+        (1, "Comedy",),
+        (2, "Sci-Fi",),
+        (1, "Romance",),
+        (3, "Drama",),
+        (1, "Thriller",),
+        (4, "Action",)
     ]
     users_seed_data = [
         ("bob", "bob@email.com", "password"),
@@ -81,21 +99,49 @@ def initial_setup():
     ]
     conn.executemany(
         """
-        INSERT INTO movies (genre_id, review_id, name, release_year, run_time, image_url)
-        VALUES (?,?,?,?,?,?)
-        """,
-        movies_seed_data,
-    )
-    conn.executemany(
-        """
-        INSERT INTO genres (name)
-        VALUES (?)
+        INSERT INTO genres (movie_id, name)
+        VALUES (?, ?)
         """,
         genres_seed_data,
-
     )
     conn.commit()
-    print("Seed data created successfully")
+    print("genres seed data created successfully")
+
+    conn.execute(
+        """
+        DROP TABLE IF EXISTS reviews;
+        """
+    )
+    conn.execute(
+        """
+        CREATE TABLE reviews (
+          id INTEGER PRIMARY KEY NOT NULL,
+          movie_id INTEGER,
+          user_id INTEGER,
+          title TEXT,
+          body TEXT,
+          rating INTEGER         
+        );
+        """
+    )
+    conn.commit()
+    print("reviews table created successfully")
+
+    reviews_seed_data = [
+        (1, 1, "Blew Chunks", "I lost my lunch it was so gross and scary.", 7),
+        (1, 2, "Rofl copter down", "I fell out of my chair laughing it was so funny", 9),
+        (2, 1, "I was not amused", "Why all the offensive jokes. What's wrong with knock knock?", 2),
+        (3, 2, "Could I borrow a feeling", "Could you lend me your glove of love. Hearting hearts need some healing", 4),
+    ]
+    conn.executemany(
+        """
+        INSERT INTO reviews (movie_id, user_id, title, body, rating)
+        VALUES (?,?,?,?,?)
+        """,
+        reviews_seed_data,
+    )
+    conn.commit()
+    print("reviews seed data created successfully")
 
     conn.close()
 
@@ -109,15 +155,15 @@ def movies_all():
     ).fetchall()
     return [dict(row) for row in rows]
 
-def movies_create(genre_id, review_id, name, release_year, run_time, image_url):
+def movies_create(name, release_year, run_time, image_url):
     conn = connect_to_db()
     row = conn.execute(
         """
-        INSERT INTO movies (genre_id, review_id, name, release_year, run_time, image_url)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO movies (name, release_year, run_time, image_url)
+        VALUES (?, ?, ?, ?)
         RETURNING *
         """,
-        (genre_id, review_id, name, release_year, run_time, image_url),
+        (name, release_year, run_time, image_url),
     ).fetchone()
     conn.commit()
     return dict(row)
@@ -133,15 +179,15 @@ def movies_find_by_id(id):
     ).fetchone()
     return dict(row)
 
-def movies_update_by_id(id, genre_id, review_id, name, release_year, run_time, image_url):
+def movies_update_by_id(id, name, release_year, run_time, image_url):
     conn = connect_to_db()
     row = conn.execute(
         """
-        UPDATE movies SET genre_id = ?, review_id = ?, name = ?, release_year = ?, run_time = ?, image_url = ?
+        UPDATE movies SET name = ?, release_year = ?, run_time = ?, image_url = ?
         WHERE id = ?
         RETURNING *
         """,
-        (genre_id, review_id, name, release_year, run_time, image_url, id),
+        (name, release_year, run_time, image_url, id),
     ).fetchone()
     conn.commit()
     return dict(row)
@@ -168,15 +214,15 @@ def genres_all():
     ).fetchall()
     return [dict(row) for row in rows]
 
-def genres_create(name):
+def genres_create(movie_id, name):
     conn = connect_to_db()
     row = conn.execute(
         """
-        INSERT INTO genres (name)
-        VALUES (?)
+        INSERT INTO genres (movie_id, name)
+        VALUES (?, ?)
         RETURNING *
         """,
-        (name,),
+        (movie_id, name,),
     ).fetchone()
     conn.commit()
     return dict(row)
@@ -185,22 +231,22 @@ def genres_find_by_id(id):
     conn = connect_to_db()
     row = conn.execute(
         """
-        SELECT * FROM movies
+        SELECT * FROM genres
         WHERE id = ?
         """,
         (id,),
     ).fetchone()
     return dict(row)
 
-def genres_update_by_id(id, name):
+def genres_update_by_id(id, movie_id, name):
     conn = connect_to_db()
     row = conn.execute(
         """
-        UPDATE genres SET name = ?
+        UPDATE genres SET movie_id = ?, name = ?
         WHERE id = ?
         RETURNING *
         """,
-        (name, id),
+        (movie_id, name, id),
     ).fetchone()
     conn.commit()
     return dict(row)
@@ -217,6 +263,64 @@ def genres_destroy_by_id(id):
     conn.commit()
     return {"message": "Genre removed"}
 
+# REVIEWS Table Connections
+def reviews_all():
+    conn = connect_to_db()
+    rows = conn.execute(
+        """
+        SELECT * FROM reviews
+        """
+    ).fetchall()
+    return [dict(row) for row in rows]
+
+def reviews_create(movie_id, user_id, title, body, rating):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        INSERT INTO reviews (movie_id, user_id, title, body, rating)
+        VALUES (?, ?, ?, ?, ?)
+        RETURNING *
+        """,
+        (movie_id, user_id, title, body, rating),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
+def reviews_find_by_id(id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        SELECT * FROM reviews
+        WHERE id = ?
+        """,
+        (id,),
+    ).fetchone()
+    return dict(row)
+
+def reviews_update_by_id(id, movie_id, user_id, title, body, rating):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        UPDATE reviews SET movie_id = ?, user_id = ?, title = ?, body = ?, rating = ?
+        WHERE id = ?
+        RETURNING *
+        """,
+        (movie_id, user_id, title, body, rating, id),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
+def reviews_destroy_by_id(id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        DELETE from reviews
+        WHERE id = ?
+        """,
+        (id,),
+    )
+    conn.commit()
+    return {"message": "Review destroyed successfully"}
 
 if __name__ == "__main__":
     initial_setup()
