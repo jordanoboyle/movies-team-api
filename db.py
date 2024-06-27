@@ -135,7 +135,7 @@ def initial_setup():
         name TEXT,
         email TEXT,
         password TEXT,
-        password_digest TEXT,
+        password_digest TEXT
         );
         """
     )
