@@ -287,7 +287,9 @@ def reviews_all():
     conn = connect_to_db()
     rows = conn.execute(
         """
-        SELECT * FROM reviews
+        SELECT reviews.title, reviews.body, reviews.rating, movies.name
+        FROM reviews
+        JOIN movies ON reviews.movie_id = movies.id
         """
     ).fetchall()
     return [dict(row) for row in rows]
@@ -309,8 +311,10 @@ def reviews_find_by_id(id):
     conn = connect_to_db()
     row = conn.execute(
         """
-        SELECT * FROM reviews
-        WHERE id = ?
+        SELECT reviews.title, reviews.body, reviews.rating, movies.name
+        FROM reviews
+        JOIN movies ON reviews.movie_id = movies.id
+        WHERE reviews.id = ?
         """,
         (id,),
     ).fetchone()
@@ -340,6 +344,65 @@ def reviews_destroy_by_id(id):
     )
     conn.commit()
     return {"message": "Review destroyed successfully"}
+
+# USERS Table Connections
+def users_all():
+    conn = connect_to_db()
+    rows = conn.execute(
+        """
+        SELECT * FROM users
+        """
+    ).fetchall()
+    return [dict(row) for row in rows]
+
+def users_create(name, email, password):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        INSERT INTO users (name, email, password)
+        VALUES (?, ?, ?)
+        RETURNING *
+        """,
+        (name, email, password),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
+def users_find_by_id(id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        SELECT * FROM users
+        WHERE id = ?
+        """,
+        (id,),
+    ).fetchone()
+    return dict(row)
+
+def users_update_by_id(id, name, email, password):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        UPDATE users SET name = ?, email = ?, password = ?
+        WHERE id = ?
+        RETURNING *
+        """,
+        (name, email, password, id),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
+def users_destroy_by_id(id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        DELETE from users
+        WHERE id = ?
+        """,
+        (id,),
+    )
+    conn.commit()
+    return {"message": "User destroyed successfully"}
 
 if __name__ == "__main__":
     initial_setup()

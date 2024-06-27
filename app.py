@@ -94,3 +94,30 @@ def update_review(id):
 @app.route("/reviews/<id>.json", methods=["DELETE"])
 def destroy_review(id):
     return db.reviews_destroy_by_id(id)
+
+#USERS Routes
+@app.route("/users.json", endpoint="index_users")
+def index_users():
+    return db.users_all()
+
+@app.route("/users.json", methods=["POST"], endpoint="create_users")
+def create_users():
+    name = request.form.get("name")
+    email = request.form.get("email")
+    password = request.form.get("password")
+    return db.users_create(name, email, password)
+
+@app.route("/users/<id>.json", endpoint="show_user")
+def show_user(id):
+    return db.users_find_by_id(id)
+
+@app.route("/users/<id>.json", methods=["PATCH"])
+def update_user(id):
+    name = request.form.get("name")
+    email = request.form.get("email")
+    password = request.form.get("password")
+    return db.users_update_by_id(id, name, email, password)
+
+@app.route("/users/<id>.json", methods=["DELETE"], endpoint="delete_user")
+def delete_user(id):
+    return db.users_destroy_by_id(id)
