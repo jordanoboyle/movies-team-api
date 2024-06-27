@@ -44,8 +44,8 @@ def initial_setup():
     print("Table created successfully")
 
     movies_seed_data = [
-        (1, 1, "Alien", 1979, 125, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZQxuhkEwoRCa2QzZBb7lOVhdcMPPpxDAJ2A&s"),
-        (2, 2, "Tropic Thunder", 2008, 107, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKRQWm9hzGhsgGzmJx_DLvCy5vos2w4Htb4A&s"),
+        (1, 1, "Alien", 1979, 125, "https://postergirlnyc.myshopify.com/cdn/shop/products/182717571546-0_1200x1200.jpg?v=1563557298"),
+        (2, 2, "Tropic Thunder", 2008, 107, "https://m.media-amazon.com/images/I/51AQVt+AIVL._AC_UF894,1000_QL80_.jpg"),
         (3, 3, "Team America: World Police", 2004, 98, "https://m.media-amazon.com/images/M/MV5BMTM2Nzc4NjYxMV5BMl5BanBnXkFtZTcwNTM1MTcyMQ@@._V1_.jpg"),
         (4, 4, "Borat", 2006, 84,"https://upload.wikimedia.org/wikipedia/en/3/39/Borat_ver2.jpg")
     ]
