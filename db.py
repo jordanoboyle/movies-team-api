@@ -69,17 +69,7 @@ def initial_setup():
         );
         """
     )
-    conn.execute(
-        """
-        CREATE TABLE users (
-        id INTEGER PRIMARY KEY NOT NULL,
-        name TEXT,
-        email TEXT,
-        password TEXT,
-        password_digest TEXT,
-        );
-        """
-    )
+
     conn.commit()
     print("genres table created successfully")
 
@@ -91,12 +81,7 @@ def initial_setup():
         (1, "Thriller",),
         (4, "Action",)
     ]
-    users_seed_data = [
-        ("bob", "bob@email.com", "password"),
-        ("alex", "alex@email.com", "password"),
-        ("tony", "tony@email.com", "password"),
-        ("joe", "joe@email.com", "password")
-    ]
+
     conn.executemany(
         """
         INSERT INTO genres (movie_id, name)
@@ -142,6 +127,37 @@ def initial_setup():
     )
     conn.commit()
     print("reviews seed data created successfully")
+
+    conn.execute(
+        """
+        CREATE TABLE users (
+        id INTEGER PRIMARY KEY NOT NULL,
+        name TEXT,
+        email TEXT,
+        password TEXT,
+        password_digest TEXT,
+        );
+        """
+    )
+    conn.commit()
+    print("users table created successfully")
+
+    users_seed_data = [
+        ("bob", "bob@email.com", "password"),
+        ("alex", "alex@email.com", "password"),
+        ("tony", "tony@email.com", "password"),
+        ("joe", "joe@email.com", "password"),
+    ]
+
+    conn.executemany(
+        """
+        INSERT INTO users (name, email, password)
+        VALUES (?, ?, ?)
+        """,
+        users_seed_data,
+    )
+    conn.commit()
+    print("users seed data created successfully")
 
     conn.close()
 
